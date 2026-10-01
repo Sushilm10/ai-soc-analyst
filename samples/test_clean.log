@@ -1,0 +1,5 @@
+Oct 01 11:00:01 server01 sshd[301]: Accepted password for admin from 192.0.2.10 port 51001 ssh2
+Oct 01 11:05:12 server01 sudo: admin : TTY=pts/0 ; COMMAND=/usr/bin/systemctl status nginx
+Oct 01 11:10:30 web01 access: GET /index.html HTTP/1.1 200
+Oct 01 11:11:02 web01 access: GET /about.html HTTP/1.1 200
+Oct 01 11:15:45 server01 sshd[302]: Accepted password for admin from 192.0.2.10 port 51002 ssh2

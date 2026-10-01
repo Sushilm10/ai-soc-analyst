@@ -1,0 +1,9 @@
+Oct 01 10:00:01 server01 sshd[201]: Failed password for root from 198.51.100.25 port 42001 ssh2
+Oct 01 10:00:03 server01 sshd[202]: Failed password for root from 198.51.100.25 port 42002 ssh2
+Oct 01 10:00:05 server01 sshd[203]: Failed password for root from 198.51.100.25 port 42003 ssh2
+Oct 01 10:00:07 server01 sshd[204]: Failed password for root from 198.51.100.25 port 42004 ssh2
+Oct 01 10:00:09 server01 sshd[205]: Failed password for root from 198.51.100.25 port 42005 ssh2
+Oct 01 10:02:15 server01 sudo: user1 : TTY=pts/0 ; COMMAND=/usr/bin/whoami
+Oct 01 10:03:20 web01 access: GET /../../etc/passwd HTTP/1.1 404
+Oct 01 10:03:25 web01 access: GET /../../etc/passwd HTTP/1.1 404
+Oct 01 10:04:10 web01 access: GET /index.html HTTP/1.1 200

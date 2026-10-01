@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Incident #{{ incident.id }} | AI SOC Analyst</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="header">
+            <div>
+                <h1>Incident #{{ incident.id }}</h1>
+                <p>AI SOC Analyst Investigation Report</p>
+            </div>
+
+            <a class="back-link" href="{{ url_for('dashboard') }}">
+                ← Dashboard
+            </a>
+        </header>
+
+
+        <!-- Incident Overview -->
+
+        <section class="incident-overview">
+
+            <div class="overview-card">
+                <span>File</span>
+                <strong>{{ incident.filename }}</strong>
+            </div>
+
+            <div class="overview-card">
+                <span>Severity</span>
+
+                <strong>
+                    <span
+                        class="severity {{ incident.severity|lower }}"
+                    >
+                        {{ incident.severity }}
+                    </span>
+                </strong>
+            </div>
+
+            <div class="overview-card">
+                <span>Findings</span>
+                <strong>{{ incident.finding_count }}</strong>
+            </div>
+
+            <div class="overview-card">
+                <span>Created</span>
+                <strong>{{ incident.created_at }}</strong>
+            </div>
+
+        </section>
+
+
+        <!-- Rule-Based Findings -->
+
+        <section class="report-section">
+
+            <h2>Detected Findings</h2>
+
+            {% if findings %}
+
+                {% for finding in findings %}
+
+                    <div class="finding-card">
+
+                        <div class="finding-header">
+
+                            <span
+                                class="severity {{ finding.severity|lower }}"
+                            >
+                                {{ finding.severity }}
+                            </span>
+
+                            <strong>
+                                {{ finding.category }}
+                            </strong>
+
+                        </div>
+
+                        <p>
+                            {{ finding.evidence }}
+                        </p>
+
+                        {% if finding.source_ip %}
+                            <div class="metadata">
+                                Source IP:
+                                <strong>
+                                    {{ finding.source_ip }}
+                                </strong>
+                            </div>
+                        {% endif %}
+
+                        {% if finding.count %}
+                            <div class="metadata">
+                                Event count:
+                                <strong>
+                                    {{ finding.count }}
+                                </strong>
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty">
+                    <p>No suspicious activity was detected by the rule-based scanner.</p>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- AI Analysis -->
+
+        <section class="report-section ai-section">
+
+            <h2>🤖 AI Analyst Report</h2>
+
+            <div class="ai-report">
+                {{ incident.ai_summary }}
+            </div>
+
+        </section>
+
+
+        <!-- Investigation Notes -->
+
+        <section class="report-section">
+
+            <h2>Analyst Notes</h2>
+
+            <p class="note">
+                Rule-based detections are preliminary indicators.
+                Analysts should validate findings against additional
+                logs, authentication records, endpoint telemetry,
+                and other available security evidence.
+            </p>
+
+        </section>
+
+
+        <footer>
+            <p>AI SOC Analyst • Local Security Analysis Dashboard</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

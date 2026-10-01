@@ -1,0 +1,10 @@
+Oct 01 09:00:01 server01 sshd[101]: Accepted password for admin from 192.0.2.10 port 50001 ssh2
+Oct 01 09:05:12 server01 sshd[102]: Failed password for root from 203.0.113.55 port 41001 ssh2
+Oct 01 09:05:18 server01 sshd[103]: Failed password for root from 203.0.113.55 port 41002 ssh2
+Oct 01 09:05:23 server01 sshd[104]: Failed password for root from 203.0.113.55 port 41003 ssh2
+Oct 01 09:05:29 server01 sshd[105]: Failed password for root from 203.0.113.55 port 41004 ssh2
+Oct 01 09:05:34 server01 sshd[106]: Failed password for root from 203.0.113.55 port 41005 ssh2
+Oct 01 09:10:42 server01 sudo: user1 : TTY=pts/0 ; COMMAND=/usr/bin/whoami
+Oct 01 09:15:09 web01 access: GET /index.html HTTP/1.1 200
+Oct 01 09:16:30 web01 access: GET /../../etc/passwd HTTP/1.1 404
+Oct 01 09:20:00 server01 sshd[107]: Accepted password for admin from 192.0.2.10 port 50002 ssh2
