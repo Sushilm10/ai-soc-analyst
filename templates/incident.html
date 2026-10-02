@@ -6,159 +6,2379 @@
 
     <title>Incident #{{ incident.id }} | AI SOC Analyst</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #111827;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 21px;
+            color: #111827;
+        }
+
+        .brand p {
+            margin: 3px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: #111827;
+        }
+
+        /* =========================
+           PAGE TITLE
+        ========================= */
+
+        .page-title {
+            margin-bottom: 22px;
+        }
+
+        .page-title h2 {
+            margin: 0 0 6px;
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .page-title p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        /* =========================
+           INCIDENT OVERVIEW
+        ========================= */
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .overview-card {
+            padding: 20px;
+        }
+
+        .overview-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+        .overview-value {
+            font-size: 21px;
+            font-weight: 700;
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .severity-high {
+            color: #b91c1c;
+        }
+
+        .severity-medium {
+            color: #b45309;
+        }
+
+        .severity-low {
+            color: #15803d;
+        }
+
+        /* =========================
+           MAIN GRID
+        ========================= */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(350px, 0.9fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .section-card {
+            padding: 22px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .section-subtitle {
+            margin: 4px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* =========================
+           FINDING CONTROLS
+        ========================= */
+
+        .finding-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search-box,
+        .filter-select {
+            height: 38px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #fff;
+            padding: 0 12px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .search-box:focus,
+        .filter-select:focus {
+            border-color: #9ca3af;
+        }
+
+        /* =========================
+           FINDING SUMMARY
+        ========================= */
+
+        .finding-summary {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .summary-pill {
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .summary-pill.high {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .summary-pill.medium {
+            background: #fffbeb;
+            color: #b45309;
+        }
+
+        .summary-pill.low {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        /* =========================
+           FINDING CARD
+        ========================= */
+
+        .finding-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .finding-header {
+            padding: 15px 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            background: #fafafa;
+        }
+
+        .finding-header:hover {
+            background: #f8fafc;
+        }
+
+        .finding-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .finding-number {
+            width: 27px;
+            height: 27px;
+            border-radius: 7px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .finding-category {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .finding-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 7px;
+            border-radius: 5px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .finding-severity {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .finding-severity.high {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .finding-severity.medium {
+            background: #fffbeb;
+            color: #b45309;
+        }
+
+        .finding-severity.low {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .finding-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .expand-icon {
+            color: #6b7280;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .finding-card.open .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .finding-details {
+            display: none;
+            padding: 18px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .finding-card.open .finding-details {
+            display: block;
+        }
+
+        .detail-label {
+            margin-bottom: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+            color: #6b7280;
+        }
+
+        .evidence-text {
+            background: #111827;
+            color: #e5e7eb;
+            border-radius: 8px;
+            padding: 13px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-x: auto;
+        }
+
+        .detail-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+            border: 1px solid #d1d5db;
+            background: #fff;
+            color: #374151;
+            border-radius: 7px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #f9fafb;
+        }
+
+        .small-button {
+            padding: 7px 10px;
+        }
+
+        /* =========================
+           AI PANEL
+        ========================= */
+
+        .ai-panel {
+            position: relative;
+        }
+
+        .ai-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .ai-status.analyzing {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .ai-status.ready {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .ai-status.error {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .ai-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            margin-bottom: 18px;
+        }
+
+        .spinner {
+            width: 19px;
+            height: 19px;
+            border: 2px solid #dbeafe;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress-text strong {
+            display: block;
+            font-size: 13px;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+
+        .progress-text span {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .ai-report {
+            display: none;
+        }
+
+        .ai-report.visible {
+            display: block;
+        }
+
+        .report-section {
+            margin-bottom: 20px;
+        }
+
+        .report-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .report-heading {
+            font-size: 13px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .report-content {
+            font-size: 13px;
+            line-height: 1.65;
+            color: #374151;
+            white-space: pre-wrap;
+        }
+
+        .ai-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .primary-button {
+            background: #111827;
+            color: white;
+            border-color: #111827;
+        }
+
+        .primary-button:hover {
+            background: #1f2937;
+        }
+
+        /* =========================
+           GUIDANCE
+        ========================= */
+
+        .guidance {
+            margin-top: 22px;
+            padding: 17px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+        }
+
+        .guidance-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 7px;
+        }
+
+        .guidance p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           MITRE ATT&CK PANEL
+        ========================= */
+
+        .mitre-panel {
+            margin-top: 24px;
+            padding: 22px;
+        }
+
+        .mitre-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .mitre-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mitre-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: #111827;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .mitre-title {
+            margin: 0;
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .mitre-subtitle {
+            margin: 4px 0 0;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .mitre-summary {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .mitre-stat {
+            min-width: 95px;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .mitre-stat-number {
+            font-size: 18px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .mitre-stat-label {
+            margin-top: 2px;
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+        }
+
+        .mitre-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .mitre-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .mitre-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mitre-technique {
+            min-width: 0;
+        }
+
+        .mitre-id {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 5px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .mitre-name {
+            display: block;
+            margin-top: 6px;
+            color: #111827;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .mitre-tactic {
+            display: inline-block;
+            padding: 4px 7px;
+            border-radius: 5px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .confidence {
+            display: inline-block;
+            margin-top: 7px;
+            padding: 4px 7px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .confidence-moderate {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .confidence-potential {
+            background: #fffbeb;
+            color: #b45309;
+        }
+
+        .confidence-low {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .mitre-description {
+            margin-top: 10px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .mitre-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding-top: 11px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .mitre-evidence-count {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .mitre-link {
+            color: #374151;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .mitre-link:hover {
+            text-decoration: underline;
+        }
+
+        .mitre-disclaimer {
+            margin-top: 16px;
+            padding: 12px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            color: #92400e;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .mitre-empty {
+            padding: 18px;
+            border: 1px dashed #d1d5db;
+            border-radius: 8px;
+            color: #6b7280;
+            font-size: 12px;
+            background: #fafafa;
+        }
+
+        /* =========================
+           EMPTY STATES
+        ========================= */
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mitre-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .finding-header {
+                align-items: flex-start;
+            }
+
+            .finding-right {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .mitre-header {
+                flex-direction: column;
+            }
+        }
+
+        /* =========================
+           PRINT
+        ========================= */
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                max-width: none;
+                padding: 0;
+            }
+
+            .print-hide,
+            .back-link,
+            .finding-controls,
+            .ai-actions {
+                display: none !important;
+            }
+
+            .card {
+                box-shadow: none;
+            }
+
+            .main-grid {
+                display: block;
+            }
+
+            .section-card {
+                margin-bottom: 20px;
+            }
+
+            .finding-details {
+                display: block !important;
+            }
+
+            .finding-card {
+                break-inside: avoid;
+            }
+
+            .ai-report {
+                display: block !important;
+            }
+
+            .mitre-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <header class="header">
+    <!-- =========================
+         TOP BAR
+    ========================= -->
+
+    <div class="topbar">
+
+        <div class="brand">
+            <div class="brand-icon">S</div>
+
             <div>
-                <h1>Incident #{{ incident.id }}</h1>
-                <p>AI SOC Analyst Investigation Report</p>
+                <h1>AI SOC Analyst</h1>
+                <p>Security Operations & Incident Analysis</p>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         PAGE TITLE
+    ========================= -->
+
+    <div class="page-title">
+
+        <h2>Incident #{{ incident.id }}</h2>
+
+        <p>
+            Security log investigation and AI-assisted analysis
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         INCIDENT OVERVIEW
+    ========================= -->
+
+    <div class="overview-grid">
+
+        <div class="card overview-card">
+
+            <div class="overview-label">
+                Severity
             </div>
 
-            <a class="back-link" href="{{ url_for('dashboard') }}">
-                ← Dashboard
-            </a>
-        </header>
-
-
-        <!-- Incident Overview -->
-
-        <section class="incident-overview">
-
-            <div class="overview-card">
-                <span>File</span>
-                <strong>{{ incident.filename }}</strong>
+            <div class="overview-value
+                {% if incident.severity == 'High' %}
+                    severity-high
+                {% elif incident.severity == 'Medium' %}
+                    severity-medium
+                {% else %}
+                    severity-low
+                {% endif %}
+            ">
+                {{ incident.severity }}
             </div>
 
-            <div class="overview-card">
-                <span>Severity</span>
+        </div>
 
-                <strong>
-                    <span
-                        class="severity {{ incident.severity|lower }}"
-                    >
-                        {{ incident.severity }}
-                    </span>
-                </strong>
+
+        <div class="card overview-card">
+
+            <div class="overview-label">
+                Total Findings
             </div>
 
-            <div class="overview-card">
-                <span>Findings</span>
-                <strong>{{ incident.finding_count }}</strong>
+            <div class="overview-value">
+                {{ incident.finding_count }}
             </div>
 
-            <div class="overview-card">
-                <span>Created</span>
-                <strong>{{ incident.created_at }}</strong>
+        </div>
+
+
+        <div class="card overview-card">
+
+            <div class="overview-label">
+                Log File
             </div>
 
-        </section>
+            <div class="overview-value">
+                {{ incident.filename }}
+            </div>
+
+        </div>
 
 
-        <!-- Rule-Based Findings -->
+        <div class="card overview-card">
 
-        <section class="report-section">
+            <div class="overview-label">
+                Created
+            </div>
 
-            <h2>Detected Findings</h2>
+            <div class="overview-value">
+                {{ incident.created_at }}
+            </div>
 
-            {% if findings %}
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <div class="main-grid">
+
+
+        <!-- =========================
+             FINDINGS
+        ========================= -->
+
+        <div class="card section-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h3 class="section-title">
+                        Security Findings
+                    </h3>
+
+                    <p class="section-subtitle">
+                        Rule-based detection results from the uploaded log
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- FINDING CONTROLS -->
+
+            <div class="finding-controls print-hide">
+
+                <input
+                    type="text"
+                    id="findingSearch"
+                    class="search-box"
+                    placeholder="Search findings or evidence..."
+                >
+
+                <select
+                    id="severityFilter"
+                    class="filter-select"
+                >
+                    <option value="all">All Severities</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+
+            </div>
+
+
+            <!-- FINDING SUMMARY -->
+
+            <div class="finding-summary">
+
+                <span class="summary-pill high">
+                    High:
+                    <span id="highCount">0</span>
+                </span>
+
+                <span class="summary-pill medium">
+                    Medium:
+                    <span id="mediumCount">0</span>
+                </span>
+
+                <span class="summary-pill low">
+                    Low:
+                    <span id="lowCount">0</span>
+                </span>
+
+                <span class="summary-pill">
+                    Total:
+                    <span id="totalCount">0</span>
+                </span>
+
+            </div>
+
+
+            <!-- FINDINGS LIST -->
+
+            <div id="findingsList">
 
                 {% for finding in findings %}
 
-                    <div class="finding-card">
+                <div
+                    class="finding-card"
+                    data-severity="{{ finding.severity }}"
+                    data-search="{{ (
+                        finding.category
+                        ~ ' '
+                        ~ finding.evidence
+                        ~ ' '
+                        ~ (finding.source_ip or '')
+                        ~ ' '
+                        ~ (finding.mitre | map(attribute='id') | join(' '))
+                        ~ ' '
+                        ~ (finding.mitre | map(attribute='name') | join(' '))
+                    ) | lower }}"
+                >
 
-                        <div class="finding-header">
+                    <!-- FINDING HEADER -->
+
+                    <div class="finding-header">
+
+                        <div class="finding-left">
+
+                            <div class="finding-number">
+                                {{ loop.index }}
+                            </div>
+
+                            <div>
+
+                                <div class="finding-category">
+                                    {{ finding.category }}
+                                </div>
+
+                                <div class="finding-meta">
+
+                                    {% if finding.source_ip %}
+                                        <span class="meta-pill">
+                                            IP: {{ finding.source_ip }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if finding.count %}
+                                        <span class="meta-pill">
+                                            Events: {{ finding.count }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if finding.mitre %}
+                                        <span class="meta-pill">
+                                            MITRE: {{ finding.mitre | length }}
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="finding-right">
 
                             <span
-                                class="severity {{ finding.severity|lower }}"
+                                class="finding-severity
+                                {% if finding.severity == 'High' %}
+                                    high
+                                {% elif finding.severity == 'Medium' %}
+                                    medium
+                                {% else %}
+                                    low
+                                {% endif %}
+                                "
                             >
                                 {{ finding.severity }}
                             </span>
 
-                            <strong>
-                                {{ finding.category }}
-                            </strong>
+                            <span class="expand-icon">
+                                ▼
+                            </span>
 
                         </div>
 
-                        <p>
-                            {{ finding.evidence }}
-                        </p>
+                    </div>
 
-                        {% if finding.source_ip %}
-                            <div class="metadata">
-                                Source IP:
-                                <strong>
-                                    {{ finding.source_ip }}
-                                </strong>
+
+                    <!-- FINDING DETAILS -->
+
+                    <div class="finding-details">
+
+                        <div class="detail-label">
+                            Supporting Evidence
+                        </div>
+
+                        <div class="evidence-text">
+{{ finding.evidence }}
+                        </div>
+
+
+                        <!-- SMALL MITRE REFERENCE -->
+
+                        {% if finding.mitre %}
+
+                        <div style="margin-top: 14px;">
+
+                            <div class="detail-label">
+                                Potential MITRE ATT&CK Techniques
                             </div>
+
+                            <div class="finding-meta">
+
+                                {% for technique in finding.mitre %}
+
+                                    <span class="mitre-id">
+                                        {{ technique.id }}
+                                    </span>
+
+                                    <span class="meta-pill">
+                                        {{ technique.name }}
+                                    </span>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
                         {% endif %}
 
-                        {% if finding.count %}
-                            <div class="metadata">
-                                Event count:
-                                <strong>
-                                    {{ finding.count }}
-                                </strong>
-                            </div>
+
+                        <!-- COPY EVIDENCE -->
+
+                        <div class="detail-actions print-hide">
+
+                            <button
+                                type="button"
+                                class="btn small-button copy-evidence"
+                            >
+                                Copy Evidence
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+                    No security findings were detected in this log.
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             AI ANALYSIS
+        ========================= -->
+
+        <div class="card section-card ai-panel">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h3 class="section-title">
+                        AI Security Analysis
+                    </h3>
+
+                    <p class="section-subtitle">
+                        Local LLM-assisted analyst report
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="aiStatus"
+                    class="ai-status analyzing"
+                >
+
+                    <span class="status-dot"></span>
+
+                    <span id="aiStatusText">
+                        ANALYZING
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- AI PROGRESS -->
+
+            <div
+                id="aiProgress"
+                class="ai-progress"
+            >
+
+                <div class="spinner"></div>
+
+                <div class="progress-text">
+
+                    <strong>
+                        AI analysis is running
+                    </strong>
+
+                    <span>
+                        Reviewing findings and generating analyst recommendations...
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- AI REPORT -->
+
+            <div
+                id="aiReport"
+                class="ai-report"
+            >
+
+                <div class="report-section">
+
+                    <div class="report-heading">
+                        Executive Summary
+                    </div>
+
+                    <div
+                        id="executiveSummary"
+                        class="report-content"
+                    ></div>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <div class="report-heading">
+                        Findings and Supporting Evidence
+                    </div>
+
+                    <div
+                        id="findingsEvidence"
+                        class="report-content"
+                    ></div>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <div class="report-heading">
+                        Possible False Positives or Limitations
+                    </div>
+
+                    <div
+                        id="limitations"
+                        class="report-content"
+                    ></div>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <div class="report-heading">
+                        Recommended Investigation Steps
+                    </div>
+
+                    <div
+                        id="recommendations"
+                        class="report-content"
+                    ></div>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <div class="report-heading">
+                        Overall Assessment
+                    </div>
+
+                    <div
+                        id="overallAssessment"
+                        class="report-content"
+                    ></div>
+
+                </div>
+
+
+                <!-- AI ACTIONS -->
+
+                <div class="ai-actions print-hide">
+
+                    <button
+                        type="button"
+                        class="btn primary-button"
+                        id="copyAiReport"
+                    >
+                        Copy AI Report
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="printReport"
+                    >
+                        Print Report
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- GUIDANCE -->
+
+            <div class="guidance">
+
+                <div class="guidance-title">
+                    Analyst Guidance
+                </div>
+
+                <p>
+                    AI-generated analysis is advisory and should be validated
+                    against the original evidence, system context, and relevant
+                    security telemetry before taking action.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MITRE ATT&CK MAPPING
+    ========================= -->
+
+    <div class="card mitre-panel">
+
+        <div class="mitre-header">
+
+            <div class="mitre-title-wrap">
+
+                <div class="mitre-icon">
+                    M
+                </div>
+
+                <div>
+
+                    <h3 class="mitre-title">
+                        MITRE ATT&CK Mapping
+                    </h3>
+
+                    <p class="mitre-subtitle">
+                        Potential adversary techniques identified from detected evidence
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="mitre-summary">
+
+                <div class="mitre-stat">
+
+                    <div
+                        class="mitre-stat-number"
+                        id="mitreTechniqueCount"
+                    >
+                        0
+                    </div>
+
+                    <div class="mitre-stat-label">
+                        Unique Techniques
+                    </div>
+
+                </div>
+
+
+                <div class="mitre-stat">
+
+                    <div
+                        class="mitre-stat-number"
+                        id="mitreTacticCount"
+                    >
+                        0
+                    </div>
+
+                    <div class="mitre-stat-label">
+                        Tactics
+                    </div>
+
+                </div>
+
+
+                <div class="mitre-stat">
+
+                    <div
+                        class="mitre-stat-number"
+                        id="mitreFindingCount"
+                    >
+                        0
+                    </div>
+
+                    <div class="mitre-stat-label">
+                        Mapped Findings
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="mitreList"
+            class="mitre-list"
+        >
+
+            {% set mitre_map = {} %}
+
+            {% for finding in findings %}
+
+                {% if finding.mitre %}
+
+                    {% for technique in finding.mitre %}
+
+                        {% set tid = technique.id %}
+
+                        {% if tid not in mitre_map %}
+
+                            {% set _ = mitre_map.update({
+                                tid: {
+                                    "id": technique.id,
+                                    "name": technique.name,
+                                    "tactic": technique.tactic,
+                                    "confidence": technique.confidence,
+                                    "description": technique.description,
+                                    "reference": technique.reference,
+                                    "count": 1
+                                }
+                            }) %}
+
+                        {% else %}
+
+                            {% set _ = mitre_map[tid].update({
+                                "count": mitre_map[tid].count + 1
+                            }) %}
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            {% if mitre_map %}
+
+                {% for technique_id, technique in mitre_map.items() %}
+
+                <div
+                    class="mitre-card"
+                    data-technique-id="{{ technique.id }}"
+                    data-tactic="{{ technique.tactic }}"
+                    data-confidence="{{ technique.confidence }}"
+                >
+
+                    <div class="mitre-card-header">
+
+                        <div class="mitre-technique">
+
+                            <span class="mitre-id">
+                                {{ technique.id }}
+                            </span>
+
+                            <span class="mitre-name">
+                                {{ technique.name }}
+                            </span>
+
+                            {% if technique.confidence %}
+
+                                <span
+                                    class="confidence
+                                    {% if technique.confidence|lower == 'moderate' %}
+                                        confidence-moderate
+                                    {% elif technique.confidence|lower == 'potential' %}
+                                        confidence-potential
+                                    {% else %}
+                                        confidence-low
+                                    {% endif %}
+                                    "
+                                >
+                                    {{ technique.confidence }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <span class="mitre-tactic">
+                            {{ technique.tactic }}
+                        </span>
+
+                    </div>
+
+
+                    {% if technique.description %}
+
+                    <div class="mitre-description">
+                        {{ technique.description }}
+                    </div>
+
+                    {% endif %}
+
+
+                    <div class="mitre-footer">
+
+                        <span class="mitre-evidence-count">
+                            Mapped to
+                            {{ technique.count }}
+                            finding{% if technique.count != 1 %}s{% endif %}
+                        </span>
+
+
+                        {% if technique.reference %}
+
+                        <a
+                            href="{{ technique.reference }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="mitre-link"
+                        >
+                            View MITRE Reference ↗
+                        </a>
+
                         {% endif %}
 
                     </div>
+
+                </div>
 
                 {% endfor %}
 
             {% else %}
 
-                <div class="empty">
-                    <p>No suspicious activity was detected by the rule-based scanner.</p>
+                <div class="mitre-empty">
+                    No MITRE ATT&CK techniques were mapped to the detected findings.
                 </div>
 
             {% endif %}
 
-        </section>
+        </div>
 
 
-        <!-- AI Analysis -->
+        <div class="mitre-disclaimer">
 
-        <section class="report-section ai-section">
+            <strong>Important:</strong>
+            MITRE ATT&CK mappings represent potential technique matches based
+            on detected evidence. They are not confirmation that an attacker
+            used the mapped technique. Analysts should validate the mapping
+            using additional logs, endpoint telemetry, authentication records,
+            and system context.
 
-            <h2>🤖 AI Analyst Report</h2>
-
-            <div class="ai-report">
-                {{ incident.ai_summary }}
-            </div>
-
-        </section>
-
-
-        <!-- Investigation Notes -->
-
-        <section class="report-section">
-
-            <h2>Analyst Notes</h2>
-
-            <p class="note">
-                Rule-based detections are preliminary indicators.
-                Analysts should validate findings against additional
-                logs, authentication records, endpoint telemetry,
-                and other available security evidence.
-            </p>
-
-        </section>
-
-
-        <footer>
-            <p>AI SOC Analyst • Local Security Analysis Dashboard</p>
-        </footer>
+        </div>
 
     </div>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =================================
+       FINDING CARDS
+    ================================= */
+
+    const findingCards = Array.from(
+        document.querySelectorAll(".finding-card")
+    );
+
+
+    findingCards.forEach(function (card) {
+
+        const header = card.querySelector(".finding-header");
+
+        if (!header) {
+            return;
+        }
+
+        header.addEventListener("click", function () {
+
+            card.classList.toggle("open");
+
+        });
+
+    });
+
+
+    /* =================================
+       FINDING COUNTS
+    ================================= */
+
+    function updateFindingCounts() {
+
+        let high = 0;
+        let medium = 0;
+        let low = 0;
+
+        findingCards.forEach(function (card) {
+
+            const severity = card.dataset.severity;
+
+            if (severity === "High") {
+                high++;
+            }
+
+            else if (severity === "Medium") {
+                medium++;
+            }
+
+            else if (severity === "Low") {
+                low++;
+            }
+
+        });
+
+
+        document.getElementById("highCount").textContent = high;
+        document.getElementById("mediumCount").textContent = medium;
+        document.getElementById("lowCount").textContent = low;
+        document.getElementById("totalCount").textContent =
+            findingCards.length;
+
+    }
+
+
+    updateFindingCounts();
+
+
+    /* =================================
+       FINDING SEARCH + FILTER
+    ================================= */
+
+    const searchInput =
+        document.getElementById("findingSearch");
+
+    const severityFilter =
+        document.getElementById("severityFilter");
+
+
+    function filterFindings() {
+
+        const search =
+            searchInput.value.trim().toLowerCase();
+
+        const severity =
+            severityFilter.value;
+
+
+        findingCards.forEach(function (card) {
+
+            const cardText =
+                card.dataset.search || "";
+
+            const cardSeverity =
+                card.dataset.severity || "";
+
+
+            const matchesSearch =
+                !search ||
+                cardText.includes(search);
+
+
+            const matchesSeverity =
+                severity === "all" ||
+                cardSeverity === severity;
+
+
+            if (matchesSearch && matchesSeverity) {
+
+                card.classList.remove("hidden");
+
+            }
+
+            else {
+
+                card.classList.add("hidden");
+
+            }
+
+        });
+
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        filterFindings
+    );
+
+    severityFilter.addEventListener(
+        "change",
+        filterFindings
+    );
+
+
+    /* =================================
+       COPY EVIDENCE
+    ================================= */
+
+    document
+        .querySelectorAll(".copy-evidence")
+        .forEach(function (button) {
+
+            button.addEventListener("click", function (event) {
+
+                event.stopPropagation();
+
+                const details =
+                    button.closest(".finding-details");
+
+                const evidence =
+                    details.querySelector(".evidence-text");
+
+                if (!evidence) {
+                    return;
+                }
+
+
+                const text =
+                    evidence.innerText.trim();
+
+
+                navigator.clipboard.writeText(text)
+                    .then(function () {
+
+                        const original =
+                            button.textContent;
+
+                        button.textContent =
+                            "Copied";
+
+                        setTimeout(function () {
+
+                            button.textContent =
+                                original;
+
+                        }, 1500);
+
+                    })
+                    .catch(function () {
+
+                        button.textContent =
+                            "Copy failed";
+
+                        setTimeout(function () {
+
+                            button.textContent =
+                                "Copy Evidence";
+
+                        }, 1500);
+
+                    });
+
+            });
+
+        });
+
+
+    /* =================================
+       MITRE ATT&CK STATISTICS
+    ================================= */
+
+    const mitreCards =
+        Array.from(
+            document.querySelectorAll(".mitre-card")
+        );
+
+
+    const uniqueTechniques =
+        new Set();
+
+    const uniqueTactics =
+        new Set();
+
+
+    mitreCards.forEach(function (card) {
+
+        const technique =
+            card.dataset.techniqueId;
+
+        const tactic =
+            card.dataset.tactic;
+
+
+        if (technique) {
+            uniqueTechniques.add(technique);
+        }
+
+        if (tactic) {
+            uniqueTactics.add(tactic);
+        }
+
+    });
+
+
+    document.getElementById(
+        "mitreTechniqueCount"
+    ).textContent =
+        uniqueTechniques.size;
+
+
+    document.getElementById(
+        "mitreTacticCount"
+    ).textContent =
+        uniqueTactics.size;
+
+
+    document.getElementById(
+        "mitreFindingCount"
+    ).textContent =
+        mitreCards.reduce(function (total, card) {
+
+            const countText =
+                card.querySelector(
+                    ".mitre-evidence-count"
+                )?.textContent || "";
+
+            const match =
+                countText.match(/Mapped to\s+(\d+)/);
+
+            return total +
+                (match ? Number(match[1]) : 0);
+
+        }, 0);
+
+
+    /* =================================
+       AI REPORT PARSER
+    ================================= */
+
+    const aiStatus =
+        document.getElementById("aiStatus");
+
+    const aiStatusText =
+        document.getElementById("aiStatusText");
+
+    const aiProgress =
+        document.getElementById("aiProgress");
+
+    const aiReport =
+        document.getElementById("aiReport");
+
+
+    function cleanText(text) {
+
+        return (text || "")
+            .replace(/\r\n/g, "\n")
+            .trim();
+
+    }
+
+
+    function renderAIReport(rawReport) {
+
+        rawReport =
+            cleanText(rawReport);
+
+
+        if (!rawReport) {
+
+            document.getElementById(
+                "executiveSummary"
+            ).textContent =
+                "No AI analysis was returned.";
+
+            aiReport.classList.add("visible");
+
+            return;
+
+        }
+
+
+        const sections = {
+
+            "Executive Summary":
+                "executiveSummary",
+
+            "Findings and Supporting Evidence":
+                "findingsEvidence",
+
+            "Possible False Positives or Limitations":
+                "limitations",
+
+            "Recommended Investigation Steps":
+                "recommendations",
+
+            "Overall Assessment":
+                "overallAssessment"
+
+        };
+
+
+        const normalized =
+            rawReport.replace(/\r\n/g, "\n");
+
+
+        const headingRegex =
+            /(?:^|\n)\s*(?:#{1,6}\s*)?(Executive Summary|Findings and Supporting Evidence|Possible False Positives or Limitations|Recommended Investigation Steps|Overall Assessment)\s*:?\s*(?=\n|$)/gi;
+
+
+        const matches = [];
+
+
+        let match;
+
+
+        while (
+            (match = headingRegex.exec(normalized)) !== null
+        ) {
+
+            matches.push({
+                name: match[1],
+                index: match.index,
+                end: headingRegex.lastIndex
+            });
+
+        }
+
+
+        if (matches.length === 0) {
+
+            document.getElementById(
+                "executiveSummary"
+            ).textContent =
+                normalized;
+
+        }
+
+        else {
+
+            matches.forEach(function (item, index) {
+
+                const key =
+                    Object.keys(sections)
+                        .find(function (name) {
+
+                            return name.toLowerCase() ===
+                                item.name.toLowerCase();
+
+                        });
+
+
+                if (!key) {
+                    return;
+                }
+
+
+                const contentStart =
+                    item.end;
+
+
+                const contentEnd =
+                    index + 1 < matches.length
+                        ? matches[index + 1].index
+                        : normalized.length;
+
+
+                const content =
+                    normalized
+                        .slice(
+                            contentStart,
+                            contentEnd
+                        )
+                        .trim();
+
+
+                document.getElementById(
+                    sections[key]
+                ).textContent =
+                    content;
+
+            });
+
+        }
+
+
+        aiReport.classList.add("visible");
+
+    }
+
+
+    /* =================================
+       AI STATUS
+    ================================= */
+
+    function setAIAnalyzing() {
+
+        aiStatus.className =
+            "ai-status analyzing";
+
+        aiStatusText.textContent =
+            "ANALYZING";
+
+        aiProgress.style.display =
+            "flex";
+
+        aiReport.classList.remove(
+            "visible"
+        );
+
+    }
+
+
+    function setAIReady() {
+
+        aiStatus.className =
+            "ai-status ready";
+
+        aiStatusText.textContent =
+            "ANALYSIS READY";
+
+        aiProgress.style.display =
+            "none";
+
+    }
+
+
+    function setAIError(message) {
+
+        aiStatus.className =
+            "ai-status error";
+
+        aiStatusText.textContent =
+            "STATUS ERROR";
+
+        aiProgress.style.display =
+            "none";
+
+        document.getElementById(
+            "executiveSummary"
+        ).textContent =
+            message || "AI analysis could not be completed.";
+
+        aiReport.classList.add(
+            "visible"
+        );
+
+    }
+
+
+    /* =================================
+       AI STATUS POLLING
+    ================================= */
+
+    const statusUrl =
+        "{{ url_for('ai_status', incident_id=incident.id) }}";
+
+
+    let pollCount = 0;
+
+    const maxPolls = 180;
+
+
+    function pollAIStatus() {
+
+        pollCount++;
+
+
+        fetch(statusUrl, {
+            method: "GET",
+            cache: "no-store"
+        })
+
+        .then(function (response) {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " + response.status
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(function (data) {
+
+            if (data.ready) {
+
+                setAIReady();
+
+                renderAIReport(
+                    data.ai_summary
+                );
+
+                return;
+
+            }
+
+
+            if (
+                data.error ||
+                data.status === "error"
+            ) {
+
+                setAIError(
+                    data.error ||
+                    "AI analysis failed."
+                );
+
+                return;
+
+            }
+
+
+            if (pollCount >= maxPolls) {
+
+                setAIError(
+                    "AI analysis did not finish within the expected time limit."
+                );
+
+                aiStatus.className =
+                    "ai-status error";
+
+                aiStatusText.textContent =
+                    "TIME LIMIT REACHED";
+
+                return;
+
+            }
+
+
+            setTimeout(
+                pollAIStatus,
+                2000
+            );
+
+        })
+
+        .catch(function (error) {
+
+            console.error(
+                "AI status error:",
+                error
+            );
+
+
+            if (pollCount >= maxPolls) {
+
+                setAIError(
+                    "Unable to retrieve AI analysis status."
+                );
+
+                return;
+
+            }
+
+
+            setTimeout(
+                pollAIStatus,
+                3000
+            );
+
+        });
+
+    }
+
+
+    setAIAnalyzing();
+
+    pollAIStatus();
+
+
+    /* =================================
+       COPY AI REPORT
+    ================================= */
+
+    const copyAiReport =
+        document.getElementById("copyAiReport");
+
+
+    copyAiReport.addEventListener(
+        "click",
+        function () {
+
+            const report =
+                [
+                    "Executive Summary",
+                    document.getElementById(
+                        "executiveSummary"
+                    ).innerText,
+
+                    "",
+                    "Findings and Supporting Evidence",
+                    document.getElementById(
+                        "findingsEvidence"
+                    ).innerText,
+
+                    "",
+                    "Possible False Positives or Limitations",
+                    document.getElementById(
+                        "limitations"
+                    ).innerText,
+
+                    "",
+                    "Recommended Investigation Steps",
+                    document.getElementById(
+                        "recommendations"
+                    ).innerText,
+
+                    "",
+                    "Overall Assessment",
+                    document.getElementById(
+                        "overallAssessment"
+                    ).innerText
+
+                ]
+                .join("\n");
+
+
+            navigator.clipboard.writeText(report)
+                .then(function () {
+
+                    const original =
+                        copyAiReport.textContent;
+
+                    copyAiReport.textContent =
+                        "Copied";
+
+                    setTimeout(function () {
+
+                        copyAiReport.textContent =
+                            original;
+
+                    }, 1500);
+
+                });
+
+        }
+    );
+
+
+    /* =================================
+       PRINT REPORT
+    ================================= */
+
+    document
+        .getElementById("printReport")
+        .addEventListener(
+            "click",
+            function () {
+
+                window.print();
+
+            }
+        );
+
+});
+
+</script>
 
 </body>
 </html>

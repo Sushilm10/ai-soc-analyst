@@ -14,157 +14,578 @@
 
 <body>
 
-    <div class="container">
+<div class="app-shell">
 
-        <header class="header">
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">⌁</div>
+
             <div>
-                <h1>AI SOC Analyst</h1>
-                <p>Security Operations Centre Assistant</p>
+                <h1>AI SOC</h1>
+                <span>ANALYST CONSOLE</span>
             </div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}" class="nav-item active">
+                <span>▦</span>
+                Dashboard
+            </a>
+
+            <a href="#incidents" class="nav-item">
+                <span>◉</span>
+                Incidents
+            </a>
+
+            <a href="#upload" class="nav-item">
+                <span>↥</span>
+                Analyze Log
+            </a>
+
+        </nav>
+
+        <div class="system-status">
+
+            <div class="status-dot"></div>
+
+            <div>
+                <strong>System Online</strong>
+                <span>Ollama AI Connected</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <p class="eyebrow">SECURITY OPERATIONS CENTRE</p>
+                <h2>Threat Intelligence Dashboard</h2>
+            </div>
+
+            <div class="ai-status">
+                <span class="pulse"></span>
+                AI ENGINE ONLINE
+            </div>
+
         </header>
 
+
         {% with messages = get_flashed_messages(with_categories=true) %}
+
             {% if messages %}
+
                 <div class="messages">
+
                     {% for category, message in messages %}
+
                         <div class="message {{ category }}">
                             {{ message }}
                         </div>
+
                     {% endfor %}
+
                 </div>
+
             {% endif %}
+
         {% endwith %}
 
-        <section class="stats">
 
-            <div class="stat-card">
-                <span>Total Incidents</span>
+        <!-- Statistics -->
+
+        <section class="stats-grid">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+                    <span>Total Incidents</span>
+                    <div class="metric-icon blue">◉</div>
+                </div>
+
                 <strong>{{ total }}</strong>
+
+                <span class="metric-label">
+                    All analyzed logs
+                </span>
+
             </div>
 
-            <div class="stat-card high">
-                <span>High Severity</span>
+
+            <div class="metric-card danger">
+
+                <div class="metric-top">
+                    <span>High Severity</span>
+                    <div class="metric-icon red">!</div>
+                </div>
+
                 <strong>{{ high }}</strong>
+
+                <span class="metric-label">
+                    Requires investigation
+                </span>
+
             </div>
 
-            <div class="stat-card medium">
-                <span>Medium Severity</span>
+
+            <div class="metric-card warning">
+
+                <div class="metric-top">
+                    <span>Medium Severity</span>
+                    <div class="metric-icon yellow">▲</div>
+                </div>
+
                 <strong>{{ medium }}</strong>
+
+                <span class="metric-label">
+                    Suspicious activity
+                </span>
+
+            </div>
+
+
+            <div class="metric-card success">
+
+                <div class="metric-top">
+                    <span>AI Status</span>
+                    <div class="metric-icon green">✓</div>
+                </div>
+
+                <strong class="online-text">ONLINE</strong>
+
+                <span class="metric-label">
+                    Local Qwen 2.5 7B
+                </span>
+
             </div>
 
         </section>
 
-        <section class="upload-card">
 
-            <h2>Analyze Security Log</h2>
+        <!-- Main Grid -->
 
-            <p>
-                Upload a <strong>.log</strong> or <strong>.txt</strong>
-                file to scan it for suspicious activity.
-            </p>
+        <section class="dashboard-grid">
 
-            <form
-                action="{{ url_for('analyze') }}"
-                method="POST"
-                enctype="multipart/form-data"
-            >
 
-                <input
-                    type="file"
-                    name="logfile"
-                    accept=".log,.txt"
-                    required
+            <!-- Upload -->
+
+            <div class="panel upload-panel" id="upload">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <p class="section-label">LOG ANALYSIS</p>
+                        <h3>Analyze Security Log</h3>
+                    </div>
+
+                    <div class="panel-icon">⌁</div>
+
+                </div>
+
+                <p class="panel-description">
+                    Upload a security log and let the detection engine
+                    identify suspicious activity before the local AI
+                    generates an analyst report.
+                </p>
+
+
+                <form
+                    action="{{ url_for('analyze') }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="uploadForm"
                 >
 
-                <button type="submit">
-                    Analyze Log
-                </button>
+                    <label class="drop-zone" for="logfile">
 
-            </form>
+                        <div class="upload-icon">↥</div>
+
+                        <strong id="fileName">
+                            Drop your log file here
+                        </strong>
+
+                        <span>
+                            or click to browse
+                        </span>
+
+                        <small>
+                            .LOG or .TXT • Maximum 1 MB
+                        </small>
+
+                        <input
+                            type="file"
+                            name="logfile"
+                            id="logfile"
+                            accept=".log,.txt"
+                            required
+                        >
+
+                    </label>
+
+
+                    <button
+                        type="submit"
+                        class="analyze-button"
+                        id="analyzeButton"
+                    >
+                        <span>Analyze Log</span>
+                        <span>→</span>
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- Threat Overview -->
+
+            <div class="panel threat-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <p class="section-label">THREAT OVERVIEW</p>
+                        <h3>Current Detection Status</h3>
+                    </div>
+
+                    <div class="shield">◈</div>
+
+                </div>
+
+
+                <div class="threat-visual">
+
+                    <div
+                        class="threat-ring
+                        {% if high > 0 %}ring-danger
+                        {% elif medium > 0 %}ring-warning
+                        {% else %}ring-safe{% endif %}"
+                    >
+
+                        <div>
+                            {% if high > 0 %}
+                                <strong>HIGH</strong>
+                                <span>ATTENTION</span>
+                            {% elif medium > 0 %}
+                                <strong>MEDIUM</strong>
+                                <span>REVIEW</span>
+                            {% else %}
+                                <strong>LOW</strong>
+                                <span>NORMAL</span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="threat-summary">
+
+                    <div>
+                        <span class="legend-dot red-dot"></span>
+                        High
+                        <strong>{{ high }}</strong>
+                    </div>
+
+                    <div>
+                        <span class="legend-dot yellow-dot"></span>
+                        Medium
+                        <strong>{{ medium }}</strong>
+                    </div>
+
+                    <div>
+                        <span class="legend-dot green-dot"></span>
+                        Low
+                        <strong>{{ total - high - medium if total >= high + medium else 0 }}</strong>
+                    </div>
+
+                </div>
+
+            </div>
 
         </section>
 
-        <section class="incidents">
 
-            <h2>Recent Incidents</h2>
+        <!-- Incidents -->
+
+        <section class="panel incidents-panel" id="incidents">
+
+            <div class="panel-heading incident-heading">
+
+                <div>
+                    <p class="section-label">SECURITY EVENTS</p>
+                    <h3>Recent Incidents</h3>
+                </div>
+
+                <div class="incident-tools">
+
+                    <input
+                        type="search"
+                        id="incidentSearch"
+                        placeholder="Search incidents..."
+                        aria-label="Search incidents"
+                    >
+
+                    <select
+                        id="severityFilter"
+                        aria-label="Filter by severity"
+                    >
+                        <option value="all">All severity</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+
+                </div>
+
+            </div>
+
 
             {% if incidents %}
 
-                <div class="table-wrapper">
+                <div class="incident-list" id="incidentList">
 
-                    <table>
+                    {% for incident in incidents %}
 
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>File</th>
-                                <th>Severity</th>
-                                <th>Findings</th>
-                                <th>Created</th>
-                                <th></th>
-                            </tr>
-                        </thead>
+                        <article
+                            class="incident-row"
+                            data-filename="{{ incident.filename|lower }}"
+                            data-severity="{{ incident.severity|lower }}"
+                        >
 
-                        <tbody>
+                            <div class="incident-id">
+                                #{{ incident.id }}
+                            </div>
 
-                            {% for incident in incidents %}
+                            <div class="incident-main">
 
-                                <tr>
+                                <strong>
+                                    {{ incident.filename }}
+                                </strong>
 
-                                    <td>#{{ incident.id }}</td>
+                                <span>
+                                    {{ incident.created_at }}
+                                </span>
 
-                                    <td>
-                                        {{ incident.filename }}
-                                    </td>
+                            </div>
 
-                                    <td>
-                                        <span
-                                            class="severity {{ incident.severity|lower }}"
-                                        >
-                                            {{ incident.severity }}
-                                        </span>
-                                    </td>
 
-                                    <td>
-                                        {{ incident.finding_count }}
-                                    </td>
+                            <div class="incident-count">
 
-                                    <td>
-                                        {{ incident.created_at }}
-                                    </td>
+                                <strong>
+                                    {{ incident.finding_count }}
+                                </strong>
 
-                                    <td>
-                                        <a
-                                            href="{{ url_for(
-                                                'incident',
-                                                incident_id=incident.id
-                                            ) }}"
-                                        >
-                                            View
-                                        </a>
-                                    </td>
+                                <span>findings</span>
 
-                                </tr>
+                            </div>
 
-                            {% endfor %}
 
-                        </tbody>
+                            <div>
+                                <span
+                                    class="severity {{ incident.severity|lower }}"
+                                >
+                                    {{ incident.severity }}
+                                </span>
+                            </div>
 
-                    </table>
 
+                            <a
+                                class="view-button"
+                                href="{{ url_for(
+                                    'incident',
+                                    incident_id=incident.id
+                                ) }}"
+                            >
+                                View →
+                            </a>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <div
+                    class="no-results"
+                    id="noResults"
+                    hidden
+                >
+                    No incidents match your search.
                 </div>
 
             {% else %}
 
-                <div class="empty">
-                    <p>No incidents have been analyzed yet.</p>
+                <div class="empty-state">
+
+                    <div class="empty-icon">✓</div>
+
+                    <h4>No incidents yet</h4>
+
+                    <p>
+                        Upload a security log above to start
+                        your first investigation.
+                    </p>
+
                 </div>
 
             {% endif %}
 
         </section>
 
-    </div>
+
+        <footer>
+
+            <span>AI SOC Analyst</span>
+
+            <span>•</span>
+
+            <span>Local Security Analysis</span>
+
+            <span>•</span>
+
+            <span>Ollama / Qwen 2.5 7B</span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    const fileInput = document.getElementById("logfile");
+    const fileName = document.getElementById("fileName");
+    const uploadForm = document.getElementById("uploadForm");
+    const analyzeButton = document.getElementById("analyzeButton");
+
+    if (fileInput) {
+
+        fileInput.addEventListener("change", function () {
+
+            if (this.files.length > 0) {
+
+                fileName.textContent = this.files[0].name;
+
+            } else {
+
+                fileName.textContent =
+                    "Drop your log file here";
+
+            }
+
+        });
+
+    }
+
+
+    if (uploadForm) {
+
+        uploadForm.addEventListener("submit", function () {
+
+            analyzeButton.disabled = true;
+
+            analyzeButton.innerHTML =
+                "<span>Analyzing...</span><span class='loading-dot'>●</span>";
+
+        });
+
+    }
+
+
+    const searchInput =
+        document.getElementById("incidentSearch");
+
+    const severityFilter =
+        document.getElementById("severityFilter");
+
+    const incidentRows =
+        document.querySelectorAll(".incident-row");
+
+    const noResults =
+        document.getElementById("noResults");
+
+
+    function filterIncidents() {
+
+        const search =
+            searchInput
+                ? searchInput.value.toLowerCase()
+                : "";
+
+        const severity =
+            severityFilter
+                ? severityFilter.value
+                : "all";
+
+        let visible = 0;
+
+        incidentRows.forEach(function (row) {
+
+            const filename =
+                row.dataset.filename || "";
+
+            const rowSeverity =
+                row.dataset.severity || "";
+
+            const matchesSearch =
+                filename.includes(search);
+
+            const matchesSeverity =
+                severity === "all" ||
+                rowSeverity === severity;
+
+            if (matchesSearch && matchesSeverity) {
+
+                row.style.display = "grid";
+                visible++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        if (noResults) {
+            noResults.hidden = visible !== 0;
+        }
+
+    }
+
+
+    if (searchInput) {
+        searchInput.addEventListener(
+            "input",
+            filterIncidents
+        );
+    }
+
+
+    if (severityFilter) {
+        severityFilter.addEventListener(
+            "change",
+            filterIncidents
+        );
+    }
+
+</script>
 
 </body>
 </html>
+```
